@@ -2,8 +2,11 @@ name: CitizensModels
 version: '${version}'
 main: top.mrxiaom.citizensmodels.CitizensModels
 api-version: 1.13
-depend: [  ]
-softdepend: [ PlaceholderAPI ]
+depend:
+  - Citizens
+  - ModelEngine
+softdepend:
+  - PlaceholderAPI
 authors: [ MrXiaoM ]
 commands:
   citizensmodels:
