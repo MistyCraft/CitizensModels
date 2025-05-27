@@ -13,9 +13,11 @@ import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import top.mrxiaom.citizensmodels.CitizensModels;
+import top.mrxiaom.pluginbase.func.AutoRegister;
 
 import java.util.List;
 
+@AutoRegister
 public class NPCListener extends AbstractModule implements Listener {
     public NPCListener(CitizensModels plugin) {
         super(plugin);
