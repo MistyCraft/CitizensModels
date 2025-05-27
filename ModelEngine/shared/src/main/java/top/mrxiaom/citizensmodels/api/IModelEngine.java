@@ -13,6 +13,9 @@ public interface IModelEngine {
     void resetModel(NPC npc, boolean deSpawn);
     void onDisable();
 
+    void markHurt(NPC npc);
+    void markDeath(NPC npc);
+
     @NotNull List<String> getOrderedModelIds();
     @Nullable IActiveModel getActiveModel(@Nullable Entity entity, @Nullable String modelId);
 }

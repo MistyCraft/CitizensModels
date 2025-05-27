@@ -1,7 +1,5 @@
 package top.mrxiaom.citizensmodels.func;
 
-import com.ticxo.modelengine.api.ModelEngineAPI;
-import com.ticxo.modelengine.api.model.ModeledEntity;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCDamageEvent;
 import net.citizensnpcs.api.event.NPCDeathEvent;
@@ -44,18 +42,12 @@ public class NPCListener extends AbstractModule implements Listener {
 
     @EventHandler
     public void onNPCHurt(NPCDamageEvent e) {
-        ModeledEntity modeled = ModelEngineAPI.getModeledEntity(e.getNPC().getEntity());
-        if (modeled != null) {
-            modeled.markHurt();
-        }
+        api.markHurt(e.getNPC());
     }
 
     @EventHandler
     public void onNPCDead(NPCDeathEvent e) {
-        ModeledEntity modeled = ModelEngineAPI.getModeledEntity(e.getNPC().getEntity());
-        if (modeled != null) {
-            modeled.markRemoved();
-        }
+        api.markDeath(e.getNPC());
     }
 
     public void setNPCModel(NPC npc, String modelId) {

@@ -2,6 +2,7 @@ package top.mrxiaom.citizensmodels.meg.v3;
 
 import com.google.common.collect.Lists;
 import com.ticxo.modelengine.api.ModelEngineAPI;
+import com.ticxo.modelengine.api.animation.state.ModelState;
 import com.ticxo.modelengine.api.model.ActiveModel;
 import com.ticxo.modelengine.api.model.ModeledEntity;
 import com.ticxo.modelengine.api.model.mananger.ModelTicker;
@@ -76,6 +77,22 @@ public class ModelEngineV3 implements IModelEngine {
                     npc.spawn(loc);
                 }
             }
+        }
+    }
+
+    @Override
+    public void markHurt(NPC npc) {
+        ModeledEntity modeled = ModelEngineAPI.getModeledEntity(npc.getEntity().getUniqueId());
+        if (modeled != null) {
+            modeled.hurt();
+        }
+    }
+
+    @Override
+    public void markDeath(NPC npc) {
+        ModeledEntity modeled = ModelEngineAPI.getModeledEntity(npc.getEntity().getUniqueId());
+        if (modeled != null) {
+            modeled.setState(ModelState.DEATH);
         }
     }
 

@@ -80,6 +80,22 @@ public class ModelEngineV4 implements IModelEngine {
     }
 
     @Override
+    public void markHurt(NPC npc) {
+        ModeledEntity modeled = ModelEngineAPI.getModeledEntity(npc.getEntity());
+        if (modeled != null) {
+            modeled.markHurt();
+        }
+    }
+
+    @Override
+    public void markDeath(NPC npc) {
+        ModeledEntity modeled = ModelEngineAPI.getModeledEntity(npc.getEntity());
+        if (modeled != null) {
+            modeled.markRemoved();
+        }
+    }
+
+    @Override
     public @NotNull List<String> getOrderedModelIds() {
         return ModelEngineAPI.getAPI().getModelRegistry().getOrderedId();
     }
