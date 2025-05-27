@@ -41,7 +41,9 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     return t(sender, "&e找不到指定的模型");
                 }
                 NPCListener.inst().setNPCModel(npc, modelId);
-                return t(sender, "&a已设置 NPC 模型为&e " + modelId);
+                return t(sender, "&a已设置 NPC 模型为&e " + modelId + "&a! 推荐进行以下操作",
+                        "&f-&b /npc hidename",
+                        "&f-&b /npc hologram add 头顶标签显示");
             }
             if (args.length == 1 && "reset".equalsIgnoreCase(args[0])) {
                 NPCSelector selector = ((Citizens) CitizensAPI.getPlugin()).getNPCSelector();
