@@ -3,6 +3,7 @@ package top.mrxiaom.citizensmodels.func;
 import com.google.common.collect.Lists;
 import com.ticxo.modelengine.api.ModelEngineAPI;
 import com.ticxo.modelengine.api.model.ActiveModel;
+import com.ticxo.modelengine.api.model.ModelUpdaters;
 import com.ticxo.modelengine.api.model.ModeledEntity;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCDamageEvent;
@@ -10,6 +11,9 @@ import net.citizensnpcs.api.event.NPCDeathEvent;
 import net.citizensnpcs.api.event.NPCDespawnEvent;
 import net.citizensnpcs.api.event.NPCSpawnEvent;
 import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.api.trait.Trait;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import top.mrxiaom.citizensmodels.CitizensModels;
@@ -22,11 +26,13 @@ public class NPCListener extends AbstractModule implements Listener {
     public NPCListener(CitizensModels plugin) {
         super(plugin);
         registerEvents();
-        for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-            if (npc.isSpawned()) {
-                applyModel(npc);
+        plugin.getScheduler().runTaskLater(() -> {
+            for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
+                if (npc.isSpawned()) {
+                    applyModel(npc);
+                }
             }
-        }
+        }, 5L);
     }
 
     @EventHandler
@@ -65,29 +71,50 @@ public class NPCListener extends AbstractModule implements Listener {
         }
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private static boolean hasInvisibleTrait(NPC npc) {
+        for (Trait trait : npc.getTraits()) {
+            if (trait.getName().equals("invisible")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void applyModel(NPC npc) {
         String modelId = npc.data().get("model-id", null);
         if (modelId == null) return;
+        info("正在更新 " + npc.getFullName() + " 的模型为 " + modelId);
         ActiveModel model = ModelEngineAPI.createActiveModel(modelId);
 
-        ModeledEntity modeled = ModelEngineAPI.getOrCreateModeledEntity(npc.getEntity());
-        modeled.restore();
-        List<String> keys = Lists.newArrayList(modeled.getModels().keySet());
-        for (String key : keys) {
-            modeled.removeModel(key);
-        }
-        modeled.addModel(model, true);
-        ModelEngineAPI.getAPI().getModelUpdaters().registerModeledEntity(modeled.getBase(), modeled);
+        Entity entity = npc.getEntity();
+        ModeledEntity old = ModelEngineAPI.getModeledEntity(entity);
+        if (old != null) destroy(old);
+        ModeledEntity modeled = ModelEngineAPI.getOrCreateModeledEntity(entity);
+        modeled.setBaseEntityVisible(false);
+        modeled.addModel(model, false);
+        ModelUpdaters updaters = ModelEngineAPI.getAPI().getModelUpdaters();
+        updaters.registerModeledEntity(modeled.getBase(), modeled);
     }
 
     public void resetModel(NPC npc) {
-        ModeledEntity modeled = ModelEngineAPI.getModeledEntity(npc.getEntity());
+        Entity entity = npc.getEntity();
+        if (entity == null) return;
+        ModeledEntity modeled = ModelEngineAPI.getModeledEntity(entity);
         if (modeled != null) {
-            modeled.restore();
-            List<String> keys = Lists.newArrayList(modeled.getModels().keySet());
-            for (String key : keys) {
-                modeled.removeModel(key);
-            }
+            info("正在移除 " + npc.getFullName() + " 的模型");
+            destroy(modeled);
+            npc.despawn();
+            npc.spawn(npc.getStoredLocation());
+        }
+    }
+
+    private void destroy(ModeledEntity modeled) {
+        modeled.restore();
+        modeled.destroy();
+        List<String> keys = Lists.newArrayList(modeled.getModels().keySet());
+        for (String key : keys) {
+            modeled.removeModel(key);
         }
     }
 
