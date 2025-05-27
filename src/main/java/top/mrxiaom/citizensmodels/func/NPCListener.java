@@ -11,9 +11,8 @@ import net.citizensnpcs.api.event.NPCDeathEvent;
 import net.citizensnpcs.api.event.NPCDespawnEvent;
 import net.citizensnpcs.api.event.NPCSpawnEvent;
 import net.citizensnpcs.api.npc.NPC;
-import net.citizensnpcs.api.trait.Trait;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import top.mrxiaom.citizensmodels.CitizensModels;
@@ -42,7 +41,7 @@ public class NPCListener extends AbstractModule implements Listener {
 
     @EventHandler
     public void onNPCDeSpawn(NPCDespawnEvent e){
-        resetModel(e.getNPC());
+        resetModel(e.getNPC(), true);
     }
 
     @EventHandler
@@ -64,21 +63,11 @@ public class NPCListener extends AbstractModule implements Listener {
     public void setNPCModel(NPC npc, String modelId) {
         if (modelId == null) {
             npc.data().remove("model-id");
-            resetModel(npc);
+            resetModel(npc, false);
         } else {
             npc.data().setPersistent("model-id", modelId);
             applyModel(npc);
         }
-    }
-
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private static boolean hasInvisibleTrait(NPC npc) {
-        for (Trait trait : npc.getTraits()) {
-            if (trait.getName().equals("invisible")) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public void applyModel(NPC npc) {
@@ -97,15 +86,18 @@ public class NPCListener extends AbstractModule implements Listener {
         updaters.registerModeledEntity(modeled.getBase(), modeled);
     }
 
-    public void resetModel(NPC npc) {
+    public void resetModel(NPC npc, boolean deSpawn) {
         Entity entity = npc.getEntity();
         if (entity == null) return;
         ModeledEntity modeled = ModelEngineAPI.getModeledEntity(entity);
         if (modeled != null) {
             info("正在移除 " + npc.getFullName() + " 的模型");
+            Location loc = entity.getLocation();
             destroy(modeled);
-            npc.despawn();
-            npc.spawn(npc.getStoredLocation());
+            if (!deSpawn) plugin.getScheduler().runTask(() -> {
+                npc.despawn();
+                npc.spawn(loc);
+            });
         }
     }
 
@@ -121,7 +113,7 @@ public class NPCListener extends AbstractModule implements Listener {
     @Override
     public void onDisable() {
         for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-            resetModel(npc);
+            resetModel(npc, false);
         }
     }
 
