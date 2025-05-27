@@ -2,6 +2,10 @@ package top.mrxiaom.citizensmodels.commands;
         
 import com.google.common.collect.Lists;
 import com.ticxo.modelengine.api.ModelEngineAPI;
+import com.ticxo.modelengine.api.animation.handler.AnimationHandler;
+import com.ticxo.modelengine.api.animation.property.IAnimationProperty;
+import com.ticxo.modelengine.api.model.ActiveModel;
+import com.ticxo.modelengine.api.model.ModeledEntity;
 import net.citizensnpcs.Citizens;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -10,6 +14,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,6 +22,7 @@ import top.mrxiaom.citizensmodels.func.NPCListener;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.citizensmodels.CitizensModels;
 import top.mrxiaom.citizensmodels.func.AbstractModule;
+import top.mrxiaom.pluginbase.utils.Util;
 
 import java.util.*;
 
@@ -54,6 +60,27 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 NPCListener.inst().setNPCModel(npc, null);
                 return t(sender, "&a已重置 NPC 模型");
             }
+            if (args.length >= 3 && ("ani".equalsIgnoreCase(args[0]) || "animation".equalsIgnoreCase(args[0]))) {
+                Integer npcId = Util.parseInt(args[1]).orElse(null);
+                NPC npc = npcId == null ? null : CitizensAPI.getNPCRegistry().getById(npcId);
+                if (npc == null) {
+                    return t(sender, "&e找不到指定的NPC &7(" + args[1] + ")");
+                }
+                String modelId = npc.data().get("model-id");
+                Entity entity = npc.getEntity();
+                ModeledEntity modeled = entity == null ? null : ModelEngineAPI.getModeledEntity(entity);
+                ActiveModel model = modeled == null || modelId == null ? null : modeled.getModel(modelId).orElse(null);
+                if (model == null) {
+                    return t(sender, "&e指定的NPC &b" + npc.getFullName() + " &7(" + npc.getId() + ")" + " &e没有在世界上生成，或者没有设置模型");
+                }
+                AnimationHandler handler = model.getAnimationHandler();
+                IAnimationProperty animation = handler.getAnimation(args[2]);
+                if (animation == null) {
+                    return t(sender, "&e找不到NPC " + npc.getFullName() + " &7(" + npc.getId() + ")" + " &e的模型动画&b " + args[2]);
+                }
+                handler.playAnimation(animation.getName(), animation.getLerpIn(), animation.getLerpOut(), animation.getSpeed(), true);
+                return true;
+            }
             if (args.length == 1 && "reload".equalsIgnoreCase(args[0])) {
                 plugin.reloadConfig();
                 return t(sender, "&a配置文件已重载");
@@ -61,6 +88,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
             return t(sender, "&b&lCitizensModels&r",
                     "&f/npcm set <蓝图> &e设置已选中的NPC的模型",
                     "&f/npcm reset &e重置已选中的NPC的模型",
+                    "&f/npcm ani <npcId> <动画名> &e播放NPC动画",
                     "&f/npcm reload &e重载插件配置文件");
         }
         return true;
@@ -69,7 +97,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     private static final List<String> emptyList = Collections.emptyList();
     private static final List<String> listArg0 = Lists.newArrayList();
     private static final List<String> listOpArg0 = Lists.newArrayList(
-            "set", "reset", "reload");
+            "set", "reset", "ani", "animation", "reload");
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
@@ -80,6 +108,22 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
             if (sender.isOp()) {
                 if ("set".equalsIgnoreCase(args[0])) {
                     return startsWith(ModelEngineAPI.getAPI().getModelRegistry().getOrderedId(), args[1]);
+                }
+            }
+        }
+        if (args.length == 3) {
+            if (sender.isOp()) {
+                if ("ani".equalsIgnoreCase(args[0]) || "animation".equalsIgnoreCase(args[0])) {
+                    Integer npcId = Util.parseInt(args[1]).orElse(null);
+                    NPC npc = npcId == null ? null : CitizensAPI.getNPCRegistry().getById(npcId);
+                    String modelId = npc == null ? null : npc.data().get("model-id");
+                    Entity entity = npc == null ? null : npc.getEntity();
+                    ModeledEntity modeled = entity == null ? null : ModelEngineAPI.getModeledEntity(entity);
+                    ActiveModel model = modeled == null || modelId == null ? null : modeled.getModel(modelId).orElse(null);
+                    AnimationHandler handler = model == null ? null : model.getAnimationHandler();
+                    if (handler != null) {
+                        return startsWith(handler.getAnimations().keySet(), args[2]);
+                    }
                 }
             }
         }
