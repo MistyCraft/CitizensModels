@@ -73,7 +73,6 @@ public class NPCListener extends AbstractModule implements Listener {
     public void applyModel(NPC npc) {
         String modelId = npc.data().get("model-id", null);
         if (modelId == null) return;
-        info("正在更新 " + npc.getFullName() + " 的模型为 " + modelId);
         ActiveModel model = ModelEngineAPI.createActiveModel(modelId);
 
         Entity entity = npc.getEntity();
@@ -91,7 +90,6 @@ public class NPCListener extends AbstractModule implements Listener {
         if (entity == null) return;
         ModeledEntity modeled = ModelEngineAPI.getModeledEntity(entity);
         if (modeled != null) {
-            info("正在移除 " + npc.getFullName() + " 的模型");
             Location loc = entity.getLocation();
             destroy(modeled);
             if (!deSpawn) plugin.getScheduler().runTask(() -> {
@@ -113,7 +111,16 @@ public class NPCListener extends AbstractModule implements Listener {
     @Override
     public void onDisable() {
         for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-            resetModel(npc, false);
+            Entity entity = npc.getEntity();
+            if (entity != null) {
+                ModeledEntity modeled = ModelEngineAPI.getModeledEntity(entity);
+                if (modeled != null) {
+                    Location loc = entity.getLocation();
+                    destroy(modeled);
+                    npc.despawn();
+                    npc.spawn(loc);
+                }
+            }
         }
     }
 
