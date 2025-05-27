@@ -40,6 +40,9 @@ java {
     }
 }
 tasks {
+    jar {
+        archiveClassifier.set("api")
+    }
     shadowJar {
         archiveClassifier.set("")
         mapOf(
