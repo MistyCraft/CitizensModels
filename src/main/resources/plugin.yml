@@ -1,0 +1,11 @@
+name: CitizensModels
+version: '${version}'
+main: top.mrxiaom.citizensmodels.CitizensModels
+api-version: 1.13
+depend: [  ]
+softdepend: [ PlaceholderAPI ]
+authors: [ MrXiaoM ]
+commands:
+  citizensmodels:
+    description: 'The main command of CitizensModels'
+    aliases: [ npcmodels, npcmodel, npcm, cm ]
