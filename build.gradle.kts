@@ -27,11 +27,14 @@ dependencies {
 
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("net.citizensnpcs:citizens-main:2.0.33-SNAPSHOT")
-    compileOnly("com.ticxo.modelengine:ModelEngine:R4.0.6")
 
     implementation("com.github.technicallycoded:FoliaLib:0.4.4")
     implementation("org.jetbrains:annotations:24.0.0")
     implementation("top.mrxiaom:PluginBase:1.4.0")
+
+    for (subproject in project.project(":ModelEngine").subprojects) {
+        implementation(subproject)
+    }
 }
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)
