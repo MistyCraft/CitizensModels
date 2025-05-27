@@ -15,6 +15,7 @@ public class CitizensModels extends BukkitPlugin {
                 .database(false)
                 .reconnectDatabaseWhenReloadConfig(false)
                 .scanIgnore("top.mrxiaom.citizensmodels.libs")
+                .disableDefaultConfig(true)
         );
         this.scheduler = new FoliaLibScheduler(this);
     }
