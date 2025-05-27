@@ -3,11 +3,10 @@ package top.mrxiaom.citizensmodels;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import top.mrxiaom.citizensmodels.api.IModelEngine;
+import top.mrxiaom.citizensmodels.meg.v3.ModelEngineV3;
 import top.mrxiaom.citizensmodels.meg.v4.ModelEngineV4;
 import top.mrxiaom.pluginbase.BukkitPlugin;
 import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;
-
-import java.util.Random;
 
 public class CitizensModels extends BukkitPlugin {
     public static CitizensModels getInstance() {
@@ -44,6 +43,10 @@ public class CitizensModels extends BukkitPlugin {
         String megVersion = getModelEngineVersion();
         if (megVersion.startsWith("4.")) {
             modelEngine = new ModelEngineV4(getScheduler()::runTask);
+            return false;
+        }
+        if (megVersion.startsWith("3.")) {
+            modelEngine = new ModelEngineV3(getScheduler()::runTask);
             return false;
         }
         warn("当前 ModelEngine 版本 (" + megVersion + ") 不受支持!");
