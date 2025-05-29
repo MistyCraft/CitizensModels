@@ -6,6 +6,7 @@ import top.mrxiaom.citizensmodels.api.IModelEngine;
 import top.mrxiaom.citizensmodels.meg.v3.ModelEngineV3;
 import top.mrxiaom.citizensmodels.meg.v4.ModelEngineV4;
 import top.mrxiaom.pluginbase.BukkitPlugin;
+import top.mrxiaom.pluginbase.func.LanguageManager;
 import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;
 
 public class CitizensModels extends BukkitPlugin {
@@ -61,6 +62,13 @@ public class CitizensModels extends BukkitPlugin {
             return ver.substring(1);
         }
         return ver;
+    }
+
+    @Override
+    protected void beforeEnable() {
+        LanguageManager.inst()
+                .setLangFile("messages.yml")
+                .register(Messages.class, Messages::holder);
     }
 
     @Override

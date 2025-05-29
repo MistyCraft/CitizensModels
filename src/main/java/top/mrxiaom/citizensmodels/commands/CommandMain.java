@@ -13,12 +13,14 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import top.mrxiaom.citizensmodels.Messages;
 import top.mrxiaom.citizensmodels.api.IActiveModel;
 import top.mrxiaom.citizensmodels.api.IAnimation;
 import top.mrxiaom.citizensmodels.func.NPCListener;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.citizensmodels.CitizensModels;
 import top.mrxiaom.citizensmodels.func.AbstractModule;
+import top.mrxiaom.pluginbase.utils.Pair;
 import top.mrxiaom.pluginbase.utils.Util;
 
 import java.util.*;
@@ -39,54 +41,59 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 NPCSelector selector = ((Citizens) CitizensAPI.getPlugin()).getNPCSelector();
                 NPC npc = selector.getSelected(sender);
                 if (npc == null) {
-                    return t(sender, "&e你应该先选择一个NPC &7(/npc sel)");
+                    return Messages.npc__not_selected.tm(sender);
                 }
                 String modelId = args[1];
                 if (!plugin.getModelEngine().getOrderedModelIds().contains(modelId)) {
-                    return t(sender, "&e找不到指定的模型");
+                    return Messages.npc__blueprint_not_found.tm(sender);
                 }
                 NPCListener.inst().setNPCModel(npc, modelId);
-                return t(sender, "&a已设置 NPC 模型为&e " + modelId + "&a! 推荐进行以下操作",
-                        "&f-&b /npc hidename",
-                        "&f-&b /npc hologram add 头顶标签显示");
+                return Messages.npc__model_set.tm(sender,
+                        Pair.of("%npc_name%", npc.getFullName()),
+                        Pair.of("%npc_id%", npc.getId()),
+                        Pair.of("%model%", modelId));
             }
             if (args.length == 1 && "reset".equalsIgnoreCase(args[0])) {
                 NPCSelector selector = ((Citizens) CitizensAPI.getPlugin()).getNPCSelector();
                 NPC npc = selector.getSelected(sender);
                 if (npc == null) {
-                    return t(sender, "&e你应该先选择一个NPC &7(/npc sel)");
+                    return Messages.npc__not_selected.tm(sender);
                 }
                 NPCListener.inst().setNPCModel(npc, null);
-                return t(sender, "&a已重置 NPC 模型");
+                return Messages.npc__model_reset.tm(sender,
+                        Pair.of("%npc_name%", npc.getFullName()),
+                        Pair.of("%npc_id%", npc.getId()));
             }
             if (args.length >= 3 && ("ani".equalsIgnoreCase(args[0]) || "animation".equalsIgnoreCase(args[0]))) {
                 Integer npcId = Util.parseInt(args[1]).orElse(null);
                 NPC npc = npcId == null ? null : CitizensAPI.getNPCRegistry().getById(npcId);
                 if (npc == null) {
-                    return t(sender, "&e找不到指定的NPC &7(" + args[1] + ")");
+                    return Messages.npc__not_found.tm(sender,
+                            Pair.of("%npc_id%", npcId));
                 }
                 String modelId = npc.data().get(MODEL_ID_KEY);
                 Entity entity = npc.getEntity();
                 IActiveModel model = plugin.getModelEngine().getActiveModel(entity, modelId);
                 if (model == null) {
-                    return t(sender, "&e指定的NPC &b" + npc.getFullName() + " &7(" + npc.getId() + ")" + " &e没有在世界上生成，或者没有设置模型");
+                    return Messages.npc__model_not_found.tm(sender,
+                            Pair.of("%npc_name%", npc.getFullName()),
+                            Pair.of("%npc_id%", npc.getId()));
                 }
                 IAnimation animation = model.getAnimation(args[2]);
                 if (animation == null) {
-                    return t(sender, "&e找不到NPC " + npc.getFullName() + " &7(" + npc.getId() + ")" + " &e的模型动画&b " + args[2]);
+                    return Messages.npc__animation_not_found.tm(sender,
+                            Pair.of("%npc_name%", npc.getFullName()),
+                            Pair.of("%npc_id%", npc.getId()),
+                            Pair.of("%animation%", args[2]));
                 }
                 animation.play(true);
                 return true;
             }
             if (args.length == 1 && "reload".equalsIgnoreCase(args[0])) {
                 plugin.reloadConfig();
-                return t(sender, "&a配置文件已重载");
+                return Messages.commands__reload.tm(sender);
             }
-            return t(sender, "&b&lCitizensModels&r",
-                    "&f/npcm set <蓝图> &e设置已选中的NPC的模型",
-                    "&f/npcm reset &e重置已选中的NPC的模型",
-                    "&f/npcm ani <npcId> <动画名> &e播放NPC动画",
-                    "&f/npcm reload &e重载插件配置文件");
+            return Messages.commands__help.tm(sender);
         }
         return true;
     }
