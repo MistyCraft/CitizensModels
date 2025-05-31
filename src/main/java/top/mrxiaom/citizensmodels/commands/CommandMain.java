@@ -99,19 +99,33 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     }
 
     private static final List<String> emptyList = Collections.emptyList();
-    private static final List<String> listArg0 = Lists.newArrayList();
-    private static final List<String> listOpArg0 = Lists.newArrayList(
-            "set", "reset", "ani", "animation", "reload");
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
-            return startsWith(sender.isOp() ? listOpArg0 : listArg0, args[0]);
+            if (sender.isOp()) {
+                List<String> list = new ArrayList<>();
+                NPCSelector selector = ((Citizens) CitizensAPI.getPlugin()).getNPCSelector();
+                if (selector.getSelected(sender) != null) {
+                    list.add("set");
+                    list.add("reset");
+                }
+                list.add("ani");
+                list.add("animation");
+                list.add("reload");
+                return startsWith(list, args[0]);
+            }
+            return emptyList;
         }
         if (args.length == 2) {
             if (sender.isOp()) {
                 if ("set".equalsIgnoreCase(args[0])) {
-                    return startsWith(plugin.getModelEngine().getOrderedModelIds(), args[1]);
+                    NPCSelector selector = ((Citizens) CitizensAPI.getPlugin()).getNPCSelector();
+                    if (selector.getSelected(sender) != null) {
+                        return startsWith(plugin.getModelEngine().getOrderedModelIds(), args[1]);
+                    } else {
+                        return emptyList;
+                    }
                 }
             }
         }
