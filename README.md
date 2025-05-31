@@ -2,7 +2,8 @@
 
 Minecraft Citizens NPC 插件 ModelEngine 模型支持。
 
-> 插件目前正在服务器内进行可用性测试，短期内不会正式发布版本。
+> 插件目前正在服务器内进行可用性测试，短期内不会正式发布版本。  
+> 要先试试吗？登录 Github 账号，到 [Actions](https://github.com/MrXiaoM/CitizensModels/actions) 下载开发版。
 
 ## 简介
 
@@ -41,6 +42,13 @@ Minecraft Citizens NPC 插件 ModelEngine 模型支持。
 | `/npcm reset` | 重置已选中的NPC的模型 |
 | `/npcm ani <npcId> <动画>` | 为NPC播放模型动画 |
 | `/npcm reload` | 重载插件配置文件（暂无） |
+
+## 常见问题
+
+Q: 我在用 ReplayMod 录制回放，剪辑的时候发现，只要不看向 NPC，模型就不动/不见了怎么办？  
+> A: 到 ModelEngine 配置文件暂时关闭网络优化选项，录完再开回来。  
+> + `Network-Optimization.Vertical-Render-Distance.Enabled`
+> + `Network-Optimization.Skip-Models-Behind-Viewer.Enabled`
 
 ## 赞助
 
