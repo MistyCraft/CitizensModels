@@ -19,20 +19,22 @@ Minecraft Citizens NPC 插件 ModelEngine 模型支持。
 
 ## 版本支持
 
-目前支持在以下环境使用，其它版本请自行尝试。
+CitizensModels 至少需要 Java 17 才能运行。
 
-目前支持的 Citizens 版本
+目前支持搭配以下版本的插件使用，其它版本请自行尝试，理论上大版本相同可以通用。
+
+支持的 Citizens 版本
 + `2.0.33`
 
-目前支持的 ModelEngine 版本
+支持的 ModelEngine 版本
 + `R4.0.6`
 + `R3.2.0`
-+ *不会去支持v2*
++ *不会去支持v2及以下*
 
 ## 命令
 
 所有命令仅管理员可用。  
-根命令为 `/citizensmodels`，别名 `/npcmodels`, `/npcmodel`, `/npcm`, `cm`。  
+根命令为 `/citizensmodels`，别名 `/npcmodels`, `/npcmodel`, `/npcm`, `/cm`。  
 其中，`<>` 包裹的为必选参数，`[]` 包裹的为可选参数。
 
 | 命令 | 说明 |
