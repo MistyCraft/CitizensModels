@@ -91,6 +91,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
             }
             if (args.length == 1 && "reload".equalsIgnoreCase(args[0])) {
                 plugin.reloadConfig();
+                NPCListener.inst().applyForAllNPCs();
                 return Messages.commands__reload.tm(sender);
             }
             return Messages.commands__help.tm(sender);
