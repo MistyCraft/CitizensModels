@@ -40,6 +40,11 @@ public class NPCListener extends AbstractModule implements Listener {
     }
 
     @EventHandler
+    public void onNPCRename(NPCRenameEvent e) {
+        api.applyModel(e.getNPC());
+    }
+
+    @EventHandler
     public void onNPCDeSpawn(NPCDespawnEvent e){
         api.resetModel(e.getNPC(), true);
     }
