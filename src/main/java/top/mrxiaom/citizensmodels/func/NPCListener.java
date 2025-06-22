@@ -1,10 +1,7 @@
 package top.mrxiaom.citizensmodels.func;
 
 import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.event.NPCDamageEvent;
-import net.citizensnpcs.api.event.NPCDeathEvent;
-import net.citizensnpcs.api.event.NPCDespawnEvent;
-import net.citizensnpcs.api.event.NPCSpawnEvent;
+import net.citizensnpcs.api.event.*;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,13 +18,20 @@ public class NPCListener extends AbstractModule implements Listener {
         super(plugin);
         api = plugin.getModelEngine();
         registerEvents();
-        plugin.getScheduler().runTaskLater(() -> {
-            for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-                if (npc.isSpawned()) {
-                    api.applyModel(npc);
-                }
+        plugin.getScheduler().runTaskLater(this::applyForAllNPCs, 5L);
+    }
+
+    public void applyForAllNPCs() {
+        for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
+            if (npc.isSpawned()) {
+                api.applyModel(npc);
             }
-        }, 5L);
+        }
+    }
+
+    @EventHandler
+    public void onReload(CitizensReloadEvent e) {
+        applyForAllNPCs();
     }
 
     @EventHandler
