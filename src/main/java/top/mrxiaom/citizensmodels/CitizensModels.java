@@ -16,10 +16,7 @@ public class CitizensModels extends BukkitPlugin {
 
     public CitizensModels() {
         super(options()
-                .bungee(false)
-                .adventure(false)
-                .database(false)
-                .reconnectDatabaseWhenReloadConfig(false)
+                .adventure(true)
                 .scanIgnore("top.mrxiaom.citizensmodels.libs")
                 .disableDefaultConfig(true)
         );
