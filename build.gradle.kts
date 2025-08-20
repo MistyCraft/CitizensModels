@@ -26,7 +26,7 @@ dependencies {
     // compileOnly("org.spigotmc:spigot:1.20") // NMS
 
     compileOnly("me.clip:placeholderapi:2.11.6")
-    compileOnly("net.citizensnpcs:citizens-main:2.0.33-SNAPSHOT")
+    compileOnly("net.citizensnpcs:citizens-main:2.0.39-SNAPSHOT")
     compileOnly("org.jetbrains:annotations:24.0.0")
 
     implementation("top.mrxiaom:PluginBase:1.5.9")
