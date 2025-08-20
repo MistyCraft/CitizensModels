@@ -7,7 +7,6 @@ import top.mrxiaom.citizensmodels.meg.v3.ModelEngineV3;
 import top.mrxiaom.citizensmodels.meg.v4.ModelEngineV4;
 import top.mrxiaom.pluginbase.BukkitPlugin;
 import top.mrxiaom.pluginbase.func.LanguageManager;
-import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;
 
 public class CitizensModels extends BukkitPlugin {
     public static CitizensModels getInstance() {
@@ -20,7 +19,6 @@ public class CitizensModels extends BukkitPlugin {
                 .scanIgnore("top.mrxiaom.citizensmodels.libs")
                 .disableDefaultConfig(true)
         );
-        this.scheduler = new FoliaLibScheduler(this);
     }
     private IModelEngine modelEngine;
     public IModelEngine getModelEngine() {

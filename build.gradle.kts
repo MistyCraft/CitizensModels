@@ -27,10 +27,9 @@ dependencies {
 
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("net.citizensnpcs:citizens-main:2.0.33-SNAPSHOT")
+    compileOnly("org.jetbrains:annotations:24.0.0")
 
-    implementation("com.github.technicallycoded:FoliaLib:0.4.4")
-    implementation("org.jetbrains:annotations:24.0.0")
-    implementation("top.mrxiaom:PluginBase:1.4.0")
+    implementation("top.mrxiaom:PluginBase:1.5.9")
 
     for (subproject in project.project(":ModelEngine").subprojects) {
         implementation(subproject)
@@ -43,22 +42,21 @@ java {
     }
 }
 tasks {
-    jar {
-        archiveClassifier.set("api")
-    }
     shadowJar {
-        archiveClassifier.set("")
         mapOf(
-            "org.intellij.lang.annotations" to "annotations.intellij",
-            "org.jetbrains.annotations" to "annotations.jetbrains",
             "top.mrxiaom.pluginbase" to "base",
-            "com.tcoded.folialib" to "folialib",
         ).forEach { (original, target) ->
             relocate(original, "$shadowGroup.$target")
         }
     }
-    build {
+    val copyTask = create<Copy>("copyBuildArtifact") {
         dependsOn(shadowJar)
+        from(shadowJar.get().outputs)
+        rename { "${project.name}-$version.jar" }
+        into(rootProject.file("out"))
+    }
+    build {
+        dependsOn(copyTask)
     }
     withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
