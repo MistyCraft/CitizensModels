@@ -3,6 +3,7 @@ package top.mrxiaom.citizensmodels.meg.v4;
 import com.google.common.collect.Lists;
 import com.ticxo.modelengine.api.ModelEngineAPI;
 import com.ticxo.modelengine.api.model.ActiveModel;
+import com.ticxo.modelengine.api.model.ModelRegistry;
 import com.ticxo.modelengine.api.model.ModelUpdaters;
 import com.ticxo.modelengine.api.model.ModeledEntity;
 import net.citizensnpcs.api.CitizensAPI;
@@ -14,13 +15,21 @@ import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.citizensmodels.api.IActiveModel;
 import top.mrxiaom.citizensmodels.api.IModelEngine;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class ModelEngineV4 implements IModelEngine {
     private final Consumer<Runnable> runTask;
+    private Method getOrderedId;
     public ModelEngineV4(Consumer<Runnable> runTask) {
         this.runTask = runTask;
+        try {
+            getOrderedId = ModelRegistry.class.getDeclaredMethod("getOrderedId");
+        } catch (Throwable ignored) {
+        }
     }
 
     @Override
@@ -97,7 +106,22 @@ public class ModelEngineV4 implements IModelEngine {
 
     @Override
     public @NotNull List<String> getOrderedModelIds() {
-        return Lists.newArrayList(ModelEngineAPI.getAPI().getModelRegistry().getOrderedId());
+        try {
+            return Lists.newArrayList(ModelEngineAPI.getAPI().getModelRegistry().getOrderedId());
+        } catch (Throwable t) {
+            try {
+                Object object = getOrderedId.invoke(ModelEngineAPI.getAPI().getModelRegistry());
+                if (object instanceof Collection<?>) {
+                    List<String> list = new ArrayList<>();
+                    for (Object o : ((Collection<?>) object)) {
+                        list.add(String.valueOf(o));
+                    }
+                    return list;
+                }
+            } catch (Throwable ignored) {
+            }
+            throw t;
+        }
     }
 
     @Override
