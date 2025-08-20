@@ -2,9 +2,6 @@
 
 Minecraft Citizens NPC 插件 ModelEngine 模型支持。
 
-> 插件目前正在服务器内进行可用性测试，短期内不会正式发布版本。  
-> 要先试试吗？登录 Github 账号，到 [Actions](https://github.com/MrXiaoM/CitizensModels/actions) 下载开发版。
-
 ## 简介
 
 由于之前我服的管理员测试发现 ModelEngine [对于 Citizens 的支持](https://git.mythiccraft.io/mythiccraft/model-engine-4/-/wikis/Citizens/Commands-and-Permissions)不是那么好，有可能会把模型卡掉，所以打算写一个插件专门用来对接 Citizens 和 ModelEngine。
